@@ -1,11 +1,14 @@
 import Heket from "heket";
 
 const es6TemplateGrammar = `
-template = *(template-head identifier *["." path] template-tail)
+template = *( [head] template-head identifier *["." path] *["[" array-index "]"] template-tail [tail] )
 path = *( ALPHA )
+array-index = *( DIGIT )
 template-head = "\${"
 template-tail = "}"
-string = *( ALPHA )
+head = *( ALPHA /  DIGIT / special-characters )
+tail = *( ALPHA / DIGIT / special-characters )
+special-characters =  ("-" / "_" / "~" /  ":" / "/" / "?" / "#" / "[" / "]" / "@" /  "!" /  "&" / "'" / "(" / ")" /  "*" / "+" / "," / ";" / "=")
 identifier = ("params" / "result")
 `;
 
