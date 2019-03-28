@@ -1,5 +1,4 @@
 import Heket from "heket";
-Heket.disableRegexCaching();
 
 /* tslint:disable */
 const Grammar = `
@@ -28,7 +27,7 @@ interface IParserObject {
 }
 
 /**
- * Parse runtime expression and return token and optional path.
+ * Parse templateString and substite the given JSON.
  */
 function parse(jsonObject: any, templateString: string): string {
   const match = parser.parse(templateString);
