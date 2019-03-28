@@ -1,7 +1,7 @@
 import Heket from "heket";
 
 /* tslint:disable */
-const Grammar = `
+export const Grammar = `
 grammar = [head] *(template-head identifier *["." path] *[array-left array-index array-right] template-tail [tail])
 path = *( ALPHA / "_" )
 array-left = "["
