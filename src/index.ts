@@ -1,78 +1,83 @@
 import Heket from "heket";
+Heket.disableRegexCaching();
 
-const es6TemplateGrammar = `
-template = *( [head] template-head identifier *["." path] *["[" array-index "]"] template-tail [tail] )
-path = *( ALPHA )
+/* tslint:disable */
+const Grammar = `
+grammar = [head] *(template-head identifier *["." path] *[array-left array-index array-right] template-tail [tail])
+path = *( ALPHA / "_" )
+array-left = "["
+array-right = "]"
 array-index = *( DIGIT )
 template-head = "\${"
 template-tail = "}"
 head = *( ALPHA /  DIGIT / special-characters )
 tail = *( ALPHA / DIGIT / special-characters )
-special-characters =  ("-" / "_" / "~" /  ":" / "/" / "?" / "#" / "[" / "]" / "@" /  "!" /  "&" / "'" / "(" / ")" /  "*" / "+" / "," / ";" / "=")
-identifier = ("params" / "result")
+literals = *( ALPHA / DIGIT / special-characters )
+identifier = *( ALPHA / "_" )
+special-characters =  *("-" / "_" / "~" / "." / ":" / "/" / "?" / "#" / "[" / "]" / "@" /  "!" /  "&" / "'" / "(" / ")" /  "*" / "+" / "," / ";" / "=")
 `;
+/* tslint:enable */
 
-const parser = Heket.createParser(es6TemplateGrammar);
+const parser = Heket.createParser(Grammar);
 
-/**
- * Runtime expression results contain a token and optional path.
- * 
- * **Example**:
- * ```
-{
-  token: 'params',
-  path: 'foo'
+interface IParserObject {
+  paths: string[];
+
+  identifier: string | null;
+  arrayIndex: number | null;
 }
-  ```
- */
-interface IRuntimeExpressionResult {
-  token: "result" | "params";
-  path: string | null;
-}
-
-/**
- * Runtime expressions allow defining values based on information that will only be available within an actual JSON-RPC 2.0 call.
- * 
- * **Example**: 
- * 
- * ```
- "$params.foo"
- ```
- */
-type TRuntimeExpression = string;
-
-// export const parseVariables = function(runtimeExpression: TRuntimeExpression) {
-//   let expressions : any[] = [];
-//   try {
-//     const variableMatch = variablesParser.parse(runtimeExpression);
-//     expressions = expressions.concat(variableMatch.getAll('variables'));
-//   } catch (e) {
-//     console.log('e=', e);
-//   }
-//   console.log('expressions', expressions);
-//   if (expressions.length > 0) {
-
-//   }
-// }
 
 /**
  * Parse runtime expression and return token and optional path.
  */
-function parse(runtimeExpression: TRuntimeExpression): any {
-  const match = parser.parse(runtimeExpression);
-  return match.getRawResult();
+function parse(jsonObject: any, templateString: string): string {
+  const match = parser.parse(templateString);
+  const result = match.getRawResult();
+
+  // walk grammar
+  let currentObj: IParserObject = { paths: [], identifier: null, arrayIndex: null };
+  return result
+    .rules
+    .reduce((resultString, rule) => {
+      switch (rule.rule_name) {
+        case "head":
+          resultString += rule.string;
+          break;
+        case "template_head":
+          break;
+        case "identifier":
+          currentObj.identifier = rule.string;
+          break;
+        case "path":
+          currentObj.paths.push(rule.string);
+          break;
+        case "array_index":
+          currentObj.arrayIndex = parseInt(rule.string, 10);
+          break;
+        case "template_tail":
+          if (!currentObj.identifier) {
+            break;
+          }
+          let value = jsonObject[currentObj.identifier];
+          if (currentObj.paths.length > 0) {
+            value = currentObj.paths.reduce((memo, path) => {
+              return memo[path];
+            }, value);
+          }
+          if (Number(currentObj.arrayIndex) !== null) {
+            if (currentObj.arrayIndex !== null) {
+              value = value[currentObj.arrayIndex];
+            }
+          }
+          currentObj = { paths: [], identifier: null, arrayIndex: null };
+          resultString += value;
+          break;
+        case "tail":
+          resultString += rule.string;
+          break;
+      }
+      return resultString;
+    }, "");
 }
-
-
-
-// links: [
-//   {
-//     "name": "myLink",
-//     "method": "linked_method",
-//     "params": {
-//       “fooBarId”: “nipple-salad{$params.nipId}salad-{$result.another}”
-//     }
-//   }
-// ]
 
 export default parse;
