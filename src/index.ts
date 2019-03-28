@@ -1,4 +1,4 @@
-import Heket from "heket";
+const Heket = require("heket");
 
 /* tslint:disable */
 export const Grammar = `
@@ -37,7 +37,7 @@ function parse(jsonObject: any, templateString: string): string {
   let currentObj: IParserObject = { paths: [], identifier: null, arrayIndex: null };
   return result
     .rules
-    .reduce((resultString, rule) => {
+    .reduce((resultString: string, rule: any) => {
       switch (rule.rule_name) {
         case "head":
           resultString += rule.string;
