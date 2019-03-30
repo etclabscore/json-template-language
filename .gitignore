@@ -1,4 +1,5 @@
 src/*.js
+.refcache
 node_modules
 coverage
 build
