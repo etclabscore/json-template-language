@@ -125,4 +125,77 @@ describe("JSON Uri Templating Language", () => {
     expect(parse(json, uri)).toEqual(expected);
   });
 
+  describe("pass by value", () => {
+    it("can pass by value", () => {
+      const json = {
+        nested: {
+          query: {
+            number: [0, [1], 2],
+            salad: ["caesar", "potato"],
+          },
+        },
+      };
+      const uri = "${nested}";
+      const expected = json.nested;
+      expect(parse(json, uri, true)).toEqual(expected);
+    });
+
+    it("can pass by nested value", () => {
+      const json = {
+        nested: {
+          query: {
+            number: [0, [1], 2],
+            salad: ["caesar", "potato"],
+          },
+        },
+      };
+      const uri = "${nested.query}";
+      const expected = json.nested.query;
+      expect(parse(json, uri, true)).toEqual(expected);
+    });
+
+    it("can get [object Object] for passByValue and having string in head", () => {
+      const json = {
+        nested: {
+          query: {
+            number: [0, [1], 2],
+            salad: ["caesar", "potato"],
+          },
+        },
+      };
+      const uri = "foo${nested.query}";
+      const expected = "foo[object Object]";
+      expect(parse(json, uri, true)).toEqual(expected);
+    });
+
+    it("can get [object Object] for passByValue and having string in tail", () => {
+      const json = {
+        nested: {
+          query: {
+            number: [0, [1], 2],
+            salad: ["caesar", "potato"],
+          },
+        },
+      };
+      const uri = "${nested.query}foo";
+      const expected = "[object Object]foo";
+      expect(parse(json, uri, true)).toEqual(expected);
+    });
+
+    it("can get [object Object] for not passByValue", () => {
+      const json = {
+        nested: {
+          query: {
+            number: [0, [1], 2],
+            salad: ["caesar", "potato"],
+          },
+        },
+      };
+      const uri = "${nested.query}";
+      const expected = "[object Object]";
+      expect(parse(json, uri)).toEqual(expected);
+    });
+
+  });
+
 });

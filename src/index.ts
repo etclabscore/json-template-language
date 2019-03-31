@@ -29,7 +29,7 @@ interface IParserObject {
 /**
  * Parse templateString and substite the given JSON.
  */
-function parse(jsonObject: any, templateString: string): string {
+function parse(jsonObject: any, templateString: string, passByValue?: boolean): string | any {
   const match = parser.parse(templateString);
   const result = match.getRawResult();
 
@@ -37,7 +37,7 @@ function parse(jsonObject: any, templateString: string): string {
   let currentObj: IParserObject = { paths: [], identifier: null, arrayIndex: null };
   return result
     .rules
-    .reduce((resultString: string, rule: any) => {
+    .reduce((resultString: string | any, rule: any) => {
       switch (rule.rule_name) {
         case "head":
           resultString += rule.string;
@@ -54,6 +54,8 @@ function parse(jsonObject: any, templateString: string): string {
           currentObj.arrayIndex = parseInt(rule.string, 10);
           break;
         case "template_tail":
+          break;
+        case "tail":
           if (!currentObj.identifier) {
             break;
           }
@@ -69,9 +71,13 @@ function parse(jsonObject: any, templateString: string): string {
             }
           }
           currentObj = { paths: [], identifier: null, arrayIndex: null };
+          const isObject = value instanceof Object;
+          const isArray = value instanceof Array;
+          if (resultString === "" && rule.string === "" && passByValue && (isObject || isArray)) {
+            resultString = value;
+            break;
+          }
           resultString += value;
-          break;
-        case "tail":
           resultString += rule.string;
           break;
       }

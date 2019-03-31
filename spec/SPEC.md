@@ -207,7 +207,7 @@ head = *( ALPHA /  DIGIT / special-characters )
 ~~~
 
 ## Tail
-Head represents the characters after the template-tail until the end of the template or the next instance of a template literal.
+Tail represents the characters after the template-tail until the end of the template or the next instance of a template literal.
 
 ~~~abnf
 tail = *( ALPHA / DIGIT / special-characters )
