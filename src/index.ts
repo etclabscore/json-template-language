@@ -1,6 +1,12 @@
+/**
+ * @ignore
+ */
 const Heket = require("heket");
 
 /* tslint:disable */
+/**
+ * @ignore
+ */
 export const Grammar = `
 grammar = [head] *(template-head identifier *["." path] *[array-left array-index array-right] template-tail [tail])
 path = *( ALPHA / "_" )
@@ -17,8 +23,14 @@ special-characters =  *("-" / "_" / "~" / "." / ":" / "/" / "?" / "#" / "[" / "]
 `;
 /* tslint:enable */
 
+/**
+ * @ignore
+ */
 const parser = Heket.createParser(Grammar);
 
+/**
+ * @ignore
+ */
 interface IParserObject {
   paths: string[];
 
@@ -27,9 +39,17 @@ interface IParserObject {
 }
 
 /**
- * Parse templateString and substite the given JSON.
+ * Compile template with the given JSON into string or optionally by value.
+ * @param jsonObject a valid parsed JSON object
+ * @param templateString a string that may contain template delimeters `${}` that refer to the JSON.
+ * @param passByValue allows you to return JSON objects by value if there is no `head` or `tail`.
+ * @return a string OR a value if `passByValue` is `true` and there is no `head` or `tail`.
  */
-function parse(jsonObject: any, templateString: string, passByValue?: boolean): string | any {
+function compileTemplate(
+  jsonObject: any,
+  templateString: string,
+  passByValue?: boolean,
+): string | any {
   const match = parser.parse(templateString);
   const result = match.getRawResult();
 
@@ -85,4 +105,4 @@ function parse(jsonObject: any, templateString: string, passByValue?: boolean): 
     }, "");
 }
 
-export default parse;
+export default compileTemplate;

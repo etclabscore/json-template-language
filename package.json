@@ -4,11 +4,12 @@
   "description": "",
   "main": "build/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && typedoc --theme minimal --out docs --exclude **/*.test.ts --mode modules --name 'JSON Template Language'",
     "test": "jest --coverage"
   },
   "files": [
-    "build"
+    "build",
+    "docs"
   ],
   "author": "Shane Jonas",
   "license": "Apache-2.0",
@@ -20,6 +21,7 @@
     "jest": "^24.5.0",
     "ts-jest": "^24.0.0",
     "tslint": "^5.14.0",
+    "typedoc": "^0.14.2",
     "typescript": "^3.3.4000"
   }
 }

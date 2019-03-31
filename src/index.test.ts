@@ -179,7 +179,7 @@ describe("JSON Uri Templating Language", () => {
       };
       const uri = "${nested.query}foo";
       const expected = "[object Object]foo";
-      expect(parse(json, uri, true)).toEqual(expected);
+      expect(parse(json, uri,)).toEqual(expected);
     });
 
     it("can get [object Object] for not passByValue", () => {
