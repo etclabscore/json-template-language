@@ -179,7 +179,21 @@ describe("JSON Uri Templating Language", () => {
       };
       const uri = "${nested.query}foo";
       const expected = "[object Object]foo";
-      expect(parse(json, uri,)).toEqual(expected);
+      expect(parse(json, uri, true)).toEqual(expected);
+    });
+
+    it("can get [object Object] for passByValue and having string in tail AND head", () => {
+      const json = {
+        nested: {
+          query: {
+            number: [0, [1], 2],
+            salad: ["caesar", "potato"],
+          },
+        },
+      };
+      const uri = "foo${nested.query}foo";
+      const expected = "foo[object Object]foo";
+      expect(parse(json, uri, true)).toEqual(expected);
     });
 
     it("can get [object Object] for not passByValue", () => {

@@ -17,6 +17,10 @@
     "heket": "^1.2.3"
   },
   "devDependencies": {
+    "@qiwi/semantic-release-gh-pages-plugin": "^1.6.1",
+    "@semantic-release/changelog": "^3.0.2",
+    "@semantic-release/git": "^7.0.8",
+    "@semantic-release/npm": "^5.1.4",
     "@types/jest": "^24.0.11",
     "jest": "^24.5.0",
     "ts-jest": "^24.0.0",

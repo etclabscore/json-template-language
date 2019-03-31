@@ -91,9 +91,7 @@ function compileTemplate(
             }
           }
           currentObj = { paths: [], identifier: null, arrayIndex: null };
-          const isObject = value instanceof Object;
-          const isArray = value instanceof Array;
-          if (resultString === "" && rule.string === "" && passByValue && (isObject || isArray)) {
+          if (resultString === "" && rule.string === "" && passByValue) {
             resultString = value;
             break;
           }
