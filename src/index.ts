@@ -42,13 +42,13 @@ interface IParserObject {
  * Compile template with the given JSON into string or optionally by value.
  * @param jsonObject a valid parsed JSON object
  * @param templateString a string that may contain template delimeters `${}` that refer to the JSON.
- * @param passByValue allows you to return JSON objects by value if there is no `head` or `tail`.
- * @return a string OR a value if `passByValue` is `true` and there is no `head` or `tail`.
+ * @param passByReference allows you to return JSON objects by reference if there is no `head` or `tail`.
+ * @return a string OR a JSON value reference if `passByReference` is `true` and there is no `head` or `tail`.
  */
 function compileTemplate(
   jsonObject: any,
   templateString: string,
-  passByValue?: boolean,
+  passByReference?: boolean,
 ): string | any {
   const match = parser.parse(templateString);
   const result = match.getRawResult();
@@ -91,7 +91,7 @@ function compileTemplate(
             }
           }
           currentObj = { paths: [], identifier: null, arrayIndex: null };
-          if (resultString === "" && rule.string === "" && passByValue) {
+          if (resultString === "" && rule.string === "" && passByReference) {
             resultString = value;
             break;
           }
