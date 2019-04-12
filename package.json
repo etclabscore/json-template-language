@@ -3,6 +3,10 @@
   "version": "0.0.0-development",
   "description": "",
   "main": "build/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/etclabscore/json-template-language.git"
+  },
   "scripts": {
     "build": "tsc && typedoc --theme minimal --out docs --exclude **/*.test.ts --mode modules --name 'JSON Template Language'",
     "test": "jest --coverage"
