@@ -1,3 +1,18 @@
 {
-  "tagFormat": "${version}"
+  "tagFormat": "${version}",
+  "branch": "master",
+  "verifyConditions": [
+    "@semantic-release/changelog",
+    "@semantic-release/git",
+    "@qiwi/semantic-release-gh-pages-plugin"
+  ],
+  "publish": [
+    "@semantic-release/github",
+    {
+      "path": "@qiwi/semantic-release-gh-pages-plugin",
+      "msg": "deploy: new gh-pages release",
+      "src": "docs",
+      "branch": "gh-pages"
+    }
+  ]
 }

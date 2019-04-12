@@ -1,6 +1,12 @@
+/**
+ * @ignore
+ */
 const Heket = require("heket");
 
 /* tslint:disable */
+/**
+ * @ignore
+ */
 export const Grammar = `
 grammar = [head] *(template-head identifier *["." path] *[array-left array-index array-right] template-tail [tail])
 path = *( ALPHA / "_" )
@@ -17,8 +23,14 @@ special-characters =  *("-" / "_" / "~" / "." / ":" / "/" / "?" / "#" / "[" / "]
 `;
 /* tslint:enable */
 
+/**
+ * @ignore
+ */
 const parser = Heket.createParser(Grammar);
 
+/**
+ * @ignore
+ */
 interface IParserObject {
   paths: string[];
 
@@ -27,9 +39,17 @@ interface IParserObject {
 }
 
 /**
- * Parse templateString and substite the given JSON.
+ * Compile template with the given JSON into string or optionally by value.
+ * @param jsonObject a valid parsed JSON object
+ * @param templateString a string that may contain template delimeters `${}` that refer to the JSON.
+ * @param passByReference allows you to return JSON objects by reference if there is no `head` or `tail`.
+ * @return a string OR a JSON value reference if `passByReference` is `true` and there is no `head` or `tail`.
  */
-function parse(jsonObject: any, templateString: string): string {
+function compileTemplate(
+  jsonObject: any,
+  templateString: string,
+  passByReference?: boolean,
+): string | any {
   const match = parser.parse(templateString);
   const result = match.getRawResult();
 
@@ -37,7 +57,7 @@ function parse(jsonObject: any, templateString: string): string {
   let currentObj: IParserObject = { paths: [], identifier: null, arrayIndex: null };
   return result
     .rules
-    .reduce((resultString: string, rule: any) => {
+    .reduce((resultString: string | any, rule: any) => {
       switch (rule.rule_name) {
         case "head":
           resultString += rule.string;
@@ -54,6 +74,8 @@ function parse(jsonObject: any, templateString: string): string {
           currentObj.arrayIndex = parseInt(rule.string, 10);
           break;
         case "template_tail":
+          break;
+        case "tail":
           if (!currentObj.identifier) {
             break;
           }
@@ -69,9 +91,11 @@ function parse(jsonObject: any, templateString: string): string {
             }
           }
           currentObj = { paths: [], identifier: null, arrayIndex: null };
+          if (resultString === "" && rule.string === "" && passByReference) {
+            resultString = value;
+            break;
+          }
           resultString += value;
-          break;
-        case "tail":
           resultString += rule.string;
           break;
       }
@@ -79,4 +103,4 @@ function parse(jsonObject: any, templateString: string): string {
     }, "");
 }
 
-export default parse;
+export default compileTemplate;
