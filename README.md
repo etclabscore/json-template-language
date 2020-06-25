@@ -20,7 +20,7 @@ Specifying interfaces, runtime expression mapping, other forms of programmatical
 
 ## Usage
 
-To use the Javascript client you can:
+To use the Javascript implementation you can:
 
 Install it:
 ```
